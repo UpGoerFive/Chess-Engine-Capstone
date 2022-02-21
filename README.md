@@ -1,1 +1,1 @@
-# Chess-Engine-Capstone
+# Chess Engine Capstone
