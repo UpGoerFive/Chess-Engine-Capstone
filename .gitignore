@@ -127,3 +127,11 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+# Editor files
+*.vscode
+*.swp
+
+# Tensorflow/Keras Save files
+*.h5
+*.hdf5
