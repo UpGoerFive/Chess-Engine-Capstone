@@ -38,3 +38,23 @@ def fen_to_array(fen):
         board_array[_, piece_dict[board_string[_]]] = 1
 
     return board_array
+
+
+def puzzle_cleaning(puzzle_df):
+    """
+    Function to advance puzzle FEN by one ply and create single move target column. Returns a new data frame of FEN and target move.
+    """
+    new_df = pd.DataFrame(index=puzzle_df.index)
+
+    new_df['FEN'] = puzzle_df.apply(single_move, axis=1)
+    new_df['target_move'] = puzzle_df['Moves'].apply(lambda move_string: move_string.split()[1])
+
+    return new_df
+
+def single_move(game_series):
+    """
+    Advances game fen by one move, will probably be slow, but ideally should only be used once.
+    """
+    board = chess.Board(game_series.FEN)
+    board.push_uci(game_series.Moves.split()[0])
+    return board.fen()
