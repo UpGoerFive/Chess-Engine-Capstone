@@ -135,6 +135,11 @@ dmypy.json
 # Tensorflow/Keras Save files
 *.h5
 *.hdf5
+*.pb
+
+# Log and Model files
+*logs*
+*-PB
 
 # csv files
 *.csv
