@@ -1,6 +1,8 @@
 import numpy as np
 import pandas as pd
 import chess
+import math
+from tensorflow.keras.utils import Sequence
 
 
 def position_generator(position_df, batch_size=32):
@@ -20,15 +22,27 @@ def fix_positions(position_string):
     """
     return np.fromstring(position_string.replace('\n', '')[1: -1], dtype=np.float, sep=' ').reshape((8,8,13))
 
-class PosGen:
-    def __init__(self, position_df, batch_size=32):
+class PosGen(Sequence):
+    """
+    Class based generator based on the Keras documentation for the Sequence class.
+    """
+    def __init__(self, position_df, xlabel, ylabel, batch_size=32):
         self.batch_size = batch_size
         self.df = position_df
-        self.x = position_df.iloc[:, 0]
-        self.y = position_df.iloc[:, 1]
+        self.df_index = position_df.index
+        self.x = xlabel
+        self.y = ylabel
 
     def __len__(self):
-        pass
+        """
+        Starting len method used in the Keras documentation.
+        """
+        return math.ceil(len(self.df_index) / self.batch_size)
 
     def __getitem__(self, idx):
-        pass
+        """
+        Adapted from Keras documentation.
+        """
+        batch = self.df_index[idx * self.batch_size:(idx + 1) * self.batch_size]
+
+        return np.array([fix_positions(position_array) for position_array in self.df.loc[batch, self.x]]), np.array(self.df.loc[batch, self.y])
