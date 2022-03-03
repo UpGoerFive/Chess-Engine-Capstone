@@ -133,7 +133,6 @@ dmypy.json
 *.swp
 
 # Tensorflow/Keras Save files
-*.h5
 *.hdf5
 *.pb
 
