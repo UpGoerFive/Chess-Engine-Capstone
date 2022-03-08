@@ -1,19 +1,23 @@
 import numpy as np
 import chess
+import time
+import random
+import math
 from tensorflow.keras import models
 from fenpreprocessing import fen_to_array
 
 class Player:
     """
     Basic player class. Must have a keras model, but can accept an h5 or the heavier save model type.
-    Optionally takes a searching algorithm object, which is recommended for any appreciable strength.
+    Optionally takes a searching algorithm class, which is recommended for any appreciable strength.
     """
     def __init__(self, model, searcher=None, start_fen=chess.STARTING_FEN):
         """
         Basic player that uses python chess to make moves.
+        model should be a keras saved model, either a .h5 file or a save model type.
         """
         self.model = models.load_model(model)
-        self.searcher = searcher
+        self.searcher = searcher(self.model) if searcher else None
         self.set_position(fen=start_fen)
 
     def set_position(self, fen):
@@ -35,7 +39,7 @@ class Player:
         as an evaluation metric.
         """
         if self.searcher:
-            best_move = self.searcher.search(self.board.fen(), self.model)
+            best_move = self.searcher.search(self.board.copy())
         else:
             options = list(self.board.legal_moves)
             fens = []
@@ -63,14 +67,91 @@ class Searcher:
     """
     Searching class for evaluation. Takes a starting fen and a model for an evaluation metric.
     """
-    def __init__(self):
-        pass
+    def __init__(self, model=None):
+        self.evmetric = model
 
-    def search(self, starting_fen, model):
+    def fen_dict(self, board):
         """
-        Searching method using basic fail soft alpha beta search based on the wikipedia [pseudocode](https://en.wikipedia.org/wiki/Alpha%E2%80%93beta_pruning)
+        Returns a move: FEN dictionary of all legal moves.
         """
-        board = chess.Board(fen=starting_fen)
+        fens = {}
+        for move in board.legal_moves:
+                board.push(move)
+                fens[move] = board.fen()
+                board.pop()
+
+        return fens
+
+    def search(self, board, time_limit=10000):
+        """
+        Searching method using basic fail-soft alpha-beta search based on the wikipedia [pseudocode](https://en.wikipedia.org/wiki/Alpha%E2%80%93beta_pruning)
+        Takes a board object and time limit for search in miliseconds (this is how lichess provides time values).
+        """
+
+        # Setup timing
+        current = time.perf_counter() * 1000
+        stop_time = current + time_limit * 0.9 # Leave a buffer to avoid time outs if time limit represents total time left.
+        print("Start times: ", current, stop_time)
+
+        # Initial pruning values
+        moves = None
+        alpha = -math.inf
+        beta = math.inf
+        depth = 1
+
+        while current < stop_time:
+            # This is an IDDFS loop limited by available time
+            value, best_move, moves = self.alpha_beta(board.fen(), moves=moves, depth=depth, alpha=alpha, beta=beta, max_player=True)
+            depth += 1
+            current = time.perf_counter() * 1000
+            print(depth, value, best_move, moves)
+
+        return best_move
+
+    def alpha_beta(self, fen, moves, depth, alpha, beta, max_player: bool):
+        """
+        Alpha beta pruning. Returns the best move, and the moves in order of value, for the next iteration.
+        """
+        board = chess.Board(fen=fen)
+
+        # Setup and shuffle all potential future positions if this is the first pass
+        if not moves:
+            moves = self.fen_dict(board)
+            random.shuffle(list(moves.keys()))
+
+        move_list = list(moves.keys()) if moves else None
+
+        if depth == 0 or not moves: # End of depth and leaf nodes
+            # Function is always called with depth of at least 1 when multiple returns are expected.
+            return (self.evmetric.predict(fen_to_array(fen).reshape(1,8,8,13))[0, 0],) # return tuple for *some* consistency
+
+
+        move_order = []
+        value = -math.inf if max_player else math.inf
+        for move in move_list:
+            board.push(move)
+            if max_player:
+                value = max(value, self.alpha_beta(board.fen(), moves=None, depth=depth-1, alpha=alpha, beta=beta, max_player=False)[0])
+                alpha = max(value, alpha)
+
+                # Next two statements have to be included both times due to breaks
+                move_order.append((move, value))
+                board.pop()
+                if value >= beta:
+                    break # Beta cutoff
+            else:
+                value = min(value, self.alpha_beta(board.fen(), moves=None, depth=depth-1, alpha=alpha, beta=beta, max_player=True)[0])
+                beta = min(value, beta)
+
+                move_order.append((move, value))
+                board.pop()
+                if value <= alpha:
+                    break # Alpha cutoff
+
+        # Sort moves by value, alpha-beta pruning is best when best moves are searched first,
+        # so the ordering is returned to be used in the next depth as the search order.
+        return_order = sorted(move_order, key=lambda move_tup: move_tup[1], reverse=True)
+        return return_order[0][1], return_order[0][0], {tup[0]: moves[tup[0]] for tup in return_order}
 
 
 class Single_Game:
