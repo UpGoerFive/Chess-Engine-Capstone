@@ -4,13 +4,17 @@ from tensorflow.keras import models
 from fenpreprocessing import fen_to_array
 
 class Player:
-    def __init__(self, model, start_fen=chess.STARTING_FEN):
+    """
+    Basic player class. Must have a keras model, but can accept an h5 or the heavier save model type.
+    Optionally takes a searching algorithm object, which is recommended for any appreciable strength.
+    """
+    def __init__(self, model, searcher=None, start_fen=chess.STARTING_FEN):
         """
         Basic player that uses python chess to make moves.
         """
         self.model = models.load_model(model)
+        self.searcher = searcher
         self.set_position(fen=start_fen)
-        self.show_board()
 
     def set_position(self, fen):
         """
@@ -27,18 +31,22 @@ class Player:
     def play_move(self):
         """
         Plays best predicted move and displays board.
+        Optionally accepts a searching algorithm which then uses the player model
+        as an evaluation metric.
         """
-        options = list(self.board.legal_moves)
-        fens = []
+        if self.searcher:
+            best_move = self.searcher.search(self.board.fen(), self.model)
+        else:
+            options = list(self.board.legal_moves)
+            fens = []
 
-        for move in options:
-            self.board.push(move)
-            fens.append(self.board.fen())
-            self.board.pop()
+            for move in options:
+                self.board.push(move)
+                fens.append(self.board.fen())
+                self.board.pop()
 
-        fens = np.array([fen_to_array(fen).reshape(8,8,13) for fen in fens]) # This is slow, but I just need something working first
-        move_vals = self.model.predict(fens)
-        best_move = options[np.argmax(move_vals)]
+            fens = np.array([fen_to_array(fen).reshape(8,8,13) for fen in fens]) # This is slow, but I just need something working first
+            best_move = options[np.argmax(self.model.predict(fens))]
 
         self.board.push(best_move)
         self.show_board()
@@ -50,6 +58,19 @@ class Player:
         """
         self.board.push(move) if type(move) == chess.Move else self.board.push_san(move)
         self.show_board()
+
+class Searcher:
+    """
+    Searching class for evaluation. Takes a starting fen and a model for an evaluation metric.
+    """
+    def __init__(self):
+        pass
+
+    def search(self, starting_fen, model):
+        """
+        Searching method using basic fail soft alpha beta search based on the wikipedia [pseudocode](https://en.wikipedia.org/wiki/Alpha%E2%80%93beta_pruning)
+        """
+        board = chess.Board(fen=starting_fen)
 
 
 class Single_Game:
@@ -88,6 +109,4 @@ class Single_Game:
             self.passive_player = switcher[next_passive]
 
         return self.game_board.outcome(), self.game_board.move_stack
-
-
 
