@@ -24,7 +24,7 @@ To correct for this, later models only train on at most 4 bad positions in addit
 
 Almost all models in this project are Convolutional Neural Networks. The idea behind this was to capture features such as center control and connected pawns using the filtering that's part of a CNN, though obviously a neural network likely isn't capturing these things directly. For comparison I've included a multilayer perceptron, which performed just slightly worse than the starting CNN, with over ten times as many parameters. Using [Keras Tuner](https://www.tensorflow.org/tutorials/keras/keras_tuner) produced a CNN model that as expected outperformed all previous models. Interestingly, the tuner selected a filter size of 8, in other words each filter looks at the whole board area.
 
-Each model was set to train for 30 epochs, though some were early stopped before then. The tensorboard for this project is available [here](https://tensorboard.dev/experiment/Ay6PmptxTvKgr5QtaNecQQ/#scalars). Note that both starter models using all possible moves and the later models with a reduced imbalance and more data to train from will be displayed on the graphs by default, so it is recommended to deliberately select which runs to compare. Both the `full-puzzle-model` and `tuning` notebooks can be run after the data preparation discussed above, though each individual model takes about a day to run on my machine.
+Each model was set to train for 30 epochs, though some were early stopped before then. The tensorboard for this project is available [here](https://tensorboard.dev/experiment/Ay6PmptxTvKgr5QtaNecQQ/#scalars). Note that both starter models using all possible moves and the later models with a reduced imbalance and more data to train from will be displayed on the graphs by default, so it is recommended to deliberately select which runs to compare. Both the [`full-puzzle-model`](https://github.com/UpGoerFive/Chess-Engine-Capstone/blob/cb455fd43c5f7d84ea5874fb2ac5780aaff5f537/full-puzzle-model.ipynb) and [`tuning`](https://github.com/UpGoerFive/Chess-Engine-Capstone/blob/da141f30f1fecf134dac62cbf00977b6fb042174/tuning.ipynb) notebooks can be run after the data preparation discussed above, though each individual model takes about a day to run on my machine.
 
 ### Searching
 
@@ -87,7 +87,7 @@ Chess-Engine-Capstone
  ┣ README.md
  ┣ data_generation.py                                       <- Preprocessing and generator code
  ┣ dataorg.ipynb                                            <- Executes preprocessing
- ┣ [full-puzzle-model.ipynb](https://github.com/UpGoerFive/Chess-Engine-Capstone/blob/cb455fd43c5f7d84ea5874fb2ac5780aaff5f537/full-puzzle-model.ipynb)                                  <- Runs first full data CNN
+ ┣ full-puzzle-model.ipynb                                  <- Runs first full data CNN
  ┣ lichess_db_puzzle.csv                                    <- This needs to be downloaded from the above listed site.
  ┣ player.py                                                <- Engine code and local play ability
  ┗ tuning.ipynb                                             <- MLP model and Tuned CNN
