@@ -87,7 +87,7 @@ Chess-Engine-Capstone
  ┣ README.md
  ┣ data_generation.py                                       <- Preprocessing and generator code
  ┣ dataorg.ipynb                                            <- Executes preprocessing
- ┣ full-puzzle-model.ipynb                                  <- Runs first full data CNN
+ ┣ [full-puzzle-model.ipynb](https://github.com/UpGoerFive/Chess-Engine-Capstone/blob/cb455fd43c5f7d84ea5874fb2ac5780aaff5f537/full-puzzle-model.ipynb)                                  <- Runs first full data CNN
  ┣ lichess_db_puzzle.csv                                    <- This needs to be downloaded from the above listed site.
  ┣ player.py                                                <- Engine code and local play ability
  ┗ tuning.ipynb                                             <- MLP model and Tuned CNN
