@@ -1,6 +1,8 @@
 # A Neural Network Chess Engine
 
-A project to build a chess engine using Neural Networks as evaluation metrics.
+A project to build a chess engine using Neural Networks as evaluation metrics. The best performing CNN model achieved %90 accuracy predicting good moves after training on puzzle data.
+
+![Board Channels](https://github.com/UpGoerFive/Chess-Engine-Capstone/blob/ea5ac1f8248a2cc16fac47ef1895d7b5b1d4ea9f/images/board_breakdown.gif)
 
 ## Model Selection
 
