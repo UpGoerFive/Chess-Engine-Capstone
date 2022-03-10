@@ -1,3 +1,6 @@
+##### This is the old version of fenpreprocessing, included for use with the baseline models notebook.
+
+
 import numpy as np
 import pandas as pd
 import chess
