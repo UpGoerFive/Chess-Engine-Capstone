@@ -51,7 +51,8 @@ Here is a list of resources used while making this project:
 
 ## Thanks!
 
-Presentation slides can be found [here](https://www.canva.com/design/DAE54-TerF0/36Msz9xX1MZduSXrUSDRWw/view?utm_content=DAE54-TerF0&utm_campaign=designshare&utm_medium=link&utm_source=publishsharelink)
+Presentation slides can be found [here](https://www.canva.com/design/DAE54-TerF0/36Msz9xX1MZduSXrUSDRWw/view?utm_content=DAE54-TerF0&utm_campaign=designshare&utm_medium=link&utm_source=publishsharelink).
+
 If you have questions or suggestions, please let me know!
 
 **Repository Structure:**
