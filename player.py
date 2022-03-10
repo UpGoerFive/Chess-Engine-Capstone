@@ -4,7 +4,7 @@ import time
 import random
 import math
 from tensorflow.keras import models
-from fenpreprocessing import fen_to_array
+from data_generation import fen_to_array
 
 class Player:
     """
