@@ -53,7 +53,7 @@ Here is a list of resources used while making this project:
 
 If you have questions or suggestions, please let me know!
 
-** Repository Structure **
+**Repository Structure:**
 ```
 Chess-Engine-Capstone
  ┣ environments
