@@ -1,4 +1,4 @@
-# Chess Engine Capstone
+# A Neural Network Chess Engine
 
 A project to build a chess engine using Neural Networks as evaluation metrics.
 
